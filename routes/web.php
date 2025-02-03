@@ -9,6 +9,11 @@ use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ProdutoController;
 
 
+// Rota principal redirecionando para o login
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
 // Rotas de Produtos
 Route::resource('produtos', ProdutoController::class)->except(['create', 'edit']);
 

@@ -60,7 +60,10 @@
     style="border-top: 1px solid rgba(255, 255, 255, 0.2); background-color: #2B3E50; width: 250px;">
         <a href="#" class="text-white"><i class="bi bi-house-door-fill"></i></a>
         <a href="#" class="text-white"><i class="bi bi-arrows-fullscreen"></i></a>
-        <a href="#" class="text-white"><i class="bi bi-power"></i></a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded"><a href="#" class="text-white"><i class="bi bi-power"></i></a></button>
+        </form>
     </div>
 </nav>
 

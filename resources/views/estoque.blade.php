@@ -28,6 +28,17 @@
                 <li class="nav-item"><a href="/estoque" class="nav-link text-white active"><i class="bi bi-box"></i> Estoque</a></li>
             </ul>
         </div>
+
+         <!-- Guia inferior -->
+    <div class="fixed-bottom d-flex justify-content-around align-items-center py-3" 
+    style="border-top: 1px solid rgba(255, 255, 255, 0.2); background-color: #2B3E50; width: 250px;">
+        <a href="{{ route('dashboard') }}" class="text-white"><i class="bi bi-house-door-fill"></i></a>
+        <a href="#" class="text-white"><i class="bi bi-arrows-fullscreen"></i></a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded"><a href="#" class="text-white"><i class="bi bi-power"></i></a></button>
+        </form>
+    </div>
     </nav>
 
     <!-- Conteúdo principal -->
@@ -37,6 +48,9 @@
 
         <!-- Botão para abrir o formulário -->
         <button id="addProductButton" class="btn btn-primary mb-3"><i class="bi bi-plus-circle"></i> Adicionar Produto</button>
+
+        <!-- Campo de pesquisa -->
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Pesquisar produto...">
 
         <!-- Tabela de produtos -->
         <table class="table table-striped table-bordered">
@@ -89,119 +103,135 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const productTable = document.getElementById('productTable');
-            const productModal = new bootstrap.Modal(document.getElementById('productModal'));
-            const saveProductButton = document.getElementById('saveProductButton');
-            let currentProductId = null;
+     document.addEventListener('DOMContentLoaded', () => {
+    const productTable = document.getElementById('productTable');
+    const searchInput = document.getElementById('searchInput');
+    const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+    const saveProductButton = document.getElementById('saveProductButton');
+    let currentProductId = null;
+    let products = []; // Armazena os produtos para pesquisa
 
-            // Carregar produtos
-            const fetchProducts = async () => {
-                try {
-                    const response = await fetch('/produtos');
-                    if (!response.ok) throw new Error('Erro ao carregar produtos.');
-                    const products = await response.json();
+    // Carregar produtos
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch('/produtos');
+            if (!response.ok) throw new Error('Erro ao carregar produtos.');
+            products = await response.json();
+            displayProducts(products);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao carregar produtos.');
+        }
+    };
 
-                    productTable.innerHTML = '';
-                    if (products.length === 0) {
-                        productTable.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum produto encontrado.</td></tr>';
-                        return;
-                    }
+    // Função para exibir produtos na tabela
+    const displayProducts = (filteredProducts) => {
+        productTable.innerHTML = '';
+        if (filteredProducts.length === 0) {
+            productTable.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum produto encontrado.</td></tr>';
+            return;
+        }
 
-                    products.forEach(product => {
-                        productTable.innerHTML += `
-                            <tr>
-                                <td>${product.id}</td>
-                                <td>${product.nome}</td>
-                                <td>${product.quantidade}</td>
-                                <td>R$ ${parseFloat(product.preco).toFixed(2)}</td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id}, '${product.nome}', ${product.quantidade}, ${product.preco})"><i class="bi bi-pencil"></i> Editar</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})"><i class="bi bi-trash"></i> Excluir</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                } catch (error) {
-                    console.error(error);
-                    alert('Erro ao carregar produtos.');
-                }
-            };
+        filteredProducts.forEach(product => {
+            productTable.innerHTML += `
+                <tr>
+                    <td>${product.id}</td>
+                    <td>${product.nome}</td>
+                    <td>${product.quantidade}</td>
+                    <td>R$ ${parseFloat(product.preco).toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id}, '${product.nome}', ${product.quantidade}, ${product.preco})"><i class="bi bi-pencil"></i> Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})"><i class="bi bi-trash"></i> Excluir</button>
+                    </td>
+                </tr>
+            `;
+        });
+    };
 
-            // Adicionar ou editar produto
-            const saveProduct = async () => {
-                const nome = document.getElementById('productName').value;
-                const quantidade = parseInt(document.getElementById('productQuantity').value, 10);
-                const preco = parseFloat(document.getElementById('productPrice').value);
+    // Filtrar produtos com base no texto digitado
+    searchInput.addEventListener('input', () => {
+        const searchText = searchInput.value.toLowerCase();
+        const filteredProducts = products.filter(product =>
+            product.nome.toLowerCase().includes(searchText)
+        );
+        displayProducts(filteredProducts);
+    });
 
-                if (!nome || quantidade <= 0 || preco <= 0) {
-                    alert('Preencha todos os campos corretamente.');
-                    return;
-                }
+    // Adicionar ou editar produto
+    const saveProduct = async () => {
+        const nome = document.getElementById('productName').value;
+        const quantidade = parseInt(document.getElementById('productQuantity').value, 10);
+        const preco = parseFloat(document.getElementById('productPrice').value);
 
-                try {
-                    const method = currentProductId ? 'PUT' : 'POST';
-                    const url = currentProductId ? `/produtos/${currentProductId}` : '/produtos';
-                    const response = await fetch(url, {
-                        method,
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({ nome, quantidade, preco }),
-                    });
+        if (!nome || quantidade <= 0 || preco <= 0) {
+            alert('Preencha todos os campos corretamente.');
+            return;
+        }
 
-                    if (!response.ok) throw new Error('Erro ao salvar produto.');
-                    alert(`Produto ${currentProductId ? 'atualizado' : 'adicionado'} com sucesso!`);
-                    productModal.hide();
-                    fetchProducts();
-                } catch (error) {
-                    console.error(error);
-                    alert('Erro ao salvar produto.');
-                }
-            };
-
-            // Excluir produto
-            window.deleteProduct = async (id) => {
-                if (!confirm('Deseja realmente excluir este produto?')) return;
-
-                try {
-                    const response = await fetch(`/produtos/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        },
-                    });
-
-                    if (!response.ok) throw new Error('Erro ao excluir produto.');
-                    alert('Produto excluído com sucesso!');
-                    fetchProducts();
-                } catch (error) {
-                    console.error(error);
-                    alert('Erro ao excluir produto.');
-                }
-            };
-
-            // Editar produto
-            window.editProduct = (id, nome, quantidade, preco) => {
-                currentProductId = id;
-                document.getElementById('productName').value = nome;
-                document.getElementById('productQuantity').value = quantidade;
-                document.getElementById('productPrice').value = preco;
-                productModal.show();
-            };
-
-            // Inicializar eventos
-            saveProductButton.addEventListener('click', saveProduct);
-            document.getElementById('addProductButton').addEventListener('click', () => {
-                currentProductId = null;
-                document.getElementById('productForm').reset();
-                productModal.show();
+        try {
+            const method = currentProductId ? 'PUT' : 'POST';
+            const url = currentProductId ? `/produtos/${currentProductId}` : '/produtos';
+            const response = await fetch(url, {
+                method,
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ nome, quantidade, preco }),
             });
 
-            // Carregar produtos ao iniciar
+            if (!response.ok) throw new Error('Erro ao salvar produto.');
+            alert(`Produto ${currentProductId ? 'atualizado' : 'adicionado'} com sucesso!`);
+            productModal.hide();
             fetchProducts();
-        });
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao salvar produto.');
+        }
+    };
+
+    // Excluir produto
+    window.deleteProduct = async (id) => {
+        if (!confirm('Deseja realmente excluir este produto?')) return;
+
+        try {
+            const response = await fetch(`/produtos/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+            });
+
+            if (!response.ok) throw new Error('Erro ao excluir produto.');
+            alert('Produto excluído com sucesso!');
+            fetchProducts();
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao excluir produto.');
+        }
+    };
+
+    // Editar produto
+    window.editProduct = (id, nome, quantidade, preco) => {
+        currentProductId = id;
+        document.getElementById('productName').value = nome;
+        document.getElementById('productQuantity').value = quantidade;
+        document.getElementById('productPrice').value = preco;
+        productModal.show();
+    };
+
+    // Inicializar eventos
+    saveProductButton.addEventListener('click', saveProduct);
+    document.getElementById('addProductButton').addEventListener('click', () => {
+        currentProductId = null;
+        document.getElementById('productForm').reset();
+        productModal.show();
+    });
+
+    // Carregar produtos ao iniciar
+    fetchProducts();
+});
+
     </script>
 </body>
 </html>
