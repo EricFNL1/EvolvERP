@@ -48,6 +48,10 @@
             <li class="nav-item">
                 <a href="#" class="nav-link text-white"><i class="bi bi-star"></i> Outro Módulo</a>
             </li>
+            <li class="nav-item">
+    <a href="/estoque" class="nav-link text-white"><i class="bi bi-box"></i> Estoque</a>
+</li>
+
         </ul>
     </div>
 
@@ -56,13 +60,10 @@
     style="border-top: 1px solid rgba(255, 255, 255, 0.2); background-color: #2B3E50; width: 250px;">
         <a href="#" class="text-white"><i class="bi bi-house-door-fill"></i></a>
         <a href="#" class="text-white"><i class="bi bi-arrows-fullscreen"></i></a>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded"><a href="#" class="text-white"><i class="bi bi-power"></i></a></button>
-        </form>
-        
+        <a href="#" class="text-white"><i class="bi bi-power"></i></a>
     </div>
 </nav>
+
 
     <!-- Conteúdo principal -->
     <main class="flex-grow bg-gray-100 p-4">
@@ -75,5 +76,7 @@
             <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded">Logout</button>
         </form>
     </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
