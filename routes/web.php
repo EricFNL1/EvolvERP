@@ -9,6 +9,7 @@ use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ProdutoController;
 
 
+
 // Rota principal redirecionando para o login
 Route::get('/', function () {
     return redirect()->route('login');
@@ -38,6 +39,7 @@ Route::post('/users', [UserController::class, 'store'])->name('users.store');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

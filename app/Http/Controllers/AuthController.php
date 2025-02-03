@@ -45,7 +45,15 @@ class AuthController extends Controller
     return back()->withErrors(['email' => 'Credenciais inválidas']);
 }
 
-    
+public function dashboard()
+{
+    if (Auth::check()) {
+        $user = Auth::user();
+        return view('dashboard', ['user' => $user]);
+    } else {
+        return redirect()->route('login');
+    }
+}
 
     public function logout(Request $request)
     {
