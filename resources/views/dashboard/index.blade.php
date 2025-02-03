@@ -37,9 +37,6 @@
                 <a href="#" class="nav-link text-white"><i class="bi bi-people"></i> Cadastros Gerais</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link text-white"><i class="bi bi-book"></i> Módulos de Convivência</a>
-            </li>
-            <li class="nav-item">
                 <a href="#" class="nav-link text-white"><i class="bi bi-pencil"></i> Assinatura Digital</a>
             </li>
             <li class="nav-item">
