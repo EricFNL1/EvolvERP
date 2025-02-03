@@ -13,8 +13,8 @@
 <body class="d-flex">
 
   <!-- Barra Superior -->
-  <header class="bg-gray-900 text-white py-3 px-4 d-flex align-items-center justify-content-between fixed-top" style="margin-left: 250px; height: 60px; width: calc(100% - 250px);">
-    <h2 class="text-lg font-semibold">EvolvERP</h2>
+  <header class="bg-gray-300 text-black py-3 px-4 d-flex align-items-center justify-content-between fixed-top" style="margin-left: 250px; height: 60px; width: calc(100% - 250px);">
+    <h2 class="text-lg font-semibold">Online</h2>
     <div class="text-nowrap" style="padding-right: 20px;">
         Olá, {{ Auth::check() ? Auth::user()->name : 'Visitante' }}!
     </div>
