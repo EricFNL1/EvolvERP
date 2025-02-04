@@ -58,11 +58,12 @@ class ProdutoController extends Controller {
 
     public function destroy($id) {
         try {
+            // Localizar o produto
             $produto = Produto::findOrFail($id);
     
             // Salvar no histórico antes de excluir o produto
             HistoricoMovimentacao::create([
-                'produto_id' => $id,
+                'produto_id' => $produto->id, // Certifique-se de que este campo existe no modelo de histórico
                 'quantidade' => $produto->quantidade,
                 'unidade' => $produto->unidade,
                 'acao' => 'Excluído',
@@ -72,11 +73,16 @@ class ProdutoController extends Controller {
             // Excluir o produto
             $produto->delete();
     
-            return response()->json(['message' => 'Produto excluído com sucesso!']);
+            return response()->json(['message' => 'Produto excluído com sucesso!'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao excluir produto.'], 500);
+            // Retornar erro caso algo dê errado
+            return response()->json([
+                'error' => 'Erro ao excluir produto.',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
+    
     
     public function historico($id) {
         $historico = HistoricoMovimentacao::where('produto_id', $id)
