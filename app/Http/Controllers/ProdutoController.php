@@ -83,17 +83,14 @@ class ProdutoController extends Controller {
     
 
     public function historicoGeral(Request $request) {
-        // Validação opcional de datas
         $validated = $request->validate([
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
         ]);
     
-        // Obter os filtros de data
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
     
-        // Query para buscar o histórico, filtrando por datas, se fornecidas
         $query = HistoricoMovimentacao::with('usuario');
     
         if ($startDate) {
@@ -108,6 +105,7 @@ class ProdutoController extends Controller {
     
         return response()->json($historico);
     }
+    
     
     
     
