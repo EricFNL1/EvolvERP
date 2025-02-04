@@ -52,9 +52,7 @@
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white"><i class="bi bi-star"></i> Outro Módulo</a>
                 </li>
-                <li class="nav-item">
-                    <a href="/estoque" class="nav-link text-white"><i class="bi bi-box"></i> Estoque</a>
-                </li>
+                <li class="nav-item"><a href="/estoque" class="nav-link text-white active"><i class="bi bi-box"></i> Estoque</a></li>
             </ul>
         </div>
 
