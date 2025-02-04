@@ -48,7 +48,6 @@
 
         <!-- Botão para abrir o formulário -->
         <button id="addProductButton" class="btn btn-primary mb-3"><i class="bi bi-plus-circle"></i> Adicionar Produto</button>
-
         <!-- Campo de pesquisa -->
         <input type="text" id="searchInput" class="form-control mb-3" placeholder="Pesquisar produto...">
 
@@ -84,9 +83,17 @@
                             <input type="text" id="productName" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="productQuantity" class="form-label">Quantidade</label>
-                            <input type="number" id="productQuantity" class="form-control" required>
-                        </div>
+    <label for="productQuantity" class="form-label">Quantidade</label>
+    <input type="number" id="productQuantity" class="form-control" required>
+</div>
+<div class="mb-3">
+    <label for="productUnit" class="form-label">Unidade de Medida</label>
+    <select id="productUnit" class="form-control" required>
+        <option value="KG">KG</option>
+        <option value="Sacos">Sacos</option>
+    </select>
+</div>
+
                         <div class="mb-3">
                             <label for="productPrice" class="form-label">Preço</label>
                             <input type="number" step="0.01" id="productPrice" class="form-control" required>
@@ -103,13 +110,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-     document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const productTable = document.getElementById('productTable');
     const searchInput = document.getElementById('searchInput');
     const productModal = new bootstrap.Modal(document.getElementById('productModal'));
     const saveProductButton = document.getElementById('saveProductButton');
+    const viewGeneralHistoryButton = document.createElement('button'); // Botão para histórico geral
     let currentProductId = null;
-    let products = []; // Armazena os produtos para pesquisa
+    let products = [];
+
+    // Adicionar botão de Histórico Geral dinamicamente
+    viewGeneralHistoryButton.id = 'viewGeneralHistoryButton';
+    viewGeneralHistoryButton.className = 'btn btn-secondary mb-3';
+    viewGeneralHistoryButton.innerHTML = `<i class="bi bi-clock-history"></i> Histórico Geral`;
+    document.querySelector('main').insertBefore(viewGeneralHistoryButton, document.getElementById('addProductButton'));
 
     // Carregar produtos
     const fetchProducts = async () => {
@@ -124,11 +138,11 @@
         }
     };
 
-    // Função para exibir produtos na tabela
+    // Mostrar produtos na tabela
     const displayProducts = (filteredProducts) => {
         productTable.innerHTML = '';
         if (filteredProducts.length === 0) {
-            productTable.innerHTML = '<tr><td colspan="5" class="text-center">Nenhum produto encontrado.</td></tr>';
+            productTable.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum produto encontrado.</td></tr>';
             return;
         }
 
@@ -137,18 +151,19 @@
                 <tr>
                     <td>${product.id}</td>
                     <td>${product.nome}</td>
-                    <td>${product.quantidade}</td>
+                    <td>${product.quantidade} ${product.unidade}</td>
                     <td>R$ ${parseFloat(product.preco).toFixed(2)}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id}, '${product.nome}', ${product.quantidade}, ${product.preco})"><i class="bi bi-pencil"></i> Editar</button>
+                        <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id}, '${product.nome}', ${product.quantidade}, '${product.unidade}', ${product.preco})"><i class="bi bi-pencil"></i> Editar</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})"><i class="bi bi-trash"></i> Excluir</button>
+                        <button class="btn btn-info btn-sm" onclick="viewHistory(${product.id})"><i class="bi bi-clock-history"></i> Histórico</button>
                     </td>
                 </tr>
             `;
         });
     };
 
-    // Filtrar produtos com base no texto digitado
+    // Pesquisar produtos
     searchInput.addEventListener('input', () => {
         const searchText = searchInput.value.toLowerCase();
         const filteredProducts = products.filter(product =>
@@ -157,11 +172,12 @@
         displayProducts(filteredProducts);
     });
 
-    // Adicionar ou editar produto
+    // Salvar produto (Adicionar ou Editar)
     const saveProduct = async () => {
         const nome = document.getElementById('productName').value;
         const quantidade = parseInt(document.getElementById('productQuantity').value, 10);
         const preco = parseFloat(document.getElementById('productPrice').value);
+        const unidade = document.getElementById('productUnit').value;
 
         if (!nome || quantidade <= 0 || preco <= 0) {
             alert('Preencha todos os campos corretamente.');
@@ -173,11 +189,11 @@
             const url = currentProductId ? `/produtos/${currentProductId}` : '/produtos';
             const response = await fetch(url, {
                 method,
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ nome, quantidade, preco }),
+                body: JSON.stringify({ nome, quantidade, unidade, preco }),
             });
 
             if (!response.ok) throw new Error('Erro ao salvar produto.');
@@ -212,13 +228,52 @@
     };
 
     // Editar produto
-    window.editProduct = (id, nome, quantidade, preco) => {
+    window.editProduct = (id, nome, quantidade, unidade, preco) => {
         currentProductId = id;
         document.getElementById('productName').value = nome;
         document.getElementById('productQuantity').value = quantidade;
         document.getElementById('productPrice').value = preco;
+        document.getElementById('productUnit').value = unidade;
         productModal.show();
     };
+
+    // Ver histórico do produto
+    window.viewHistory = async (id) => {
+        try {
+            const response = await fetch(`/produtos/${id}/historico`);
+            if (!response.ok) throw new Error('Erro ao carregar histórico.');
+
+            const history = await response.json();
+            let historyHtml = '<ul>';
+            history.forEach(item => {
+                historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
+            });
+            historyHtml += '</ul>';
+            alert(`Histórico do Produto:\n${historyHtml}`);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao carregar histórico.');
+        }
+    };
+
+    // Ver histórico geral
+    viewGeneralHistoryButton.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/produtos/historico-geral');
+            if (!response.ok) throw new Error('Erro ao carregar histórico geral.');
+
+            const history = await response.json();
+            let historyHtml = '<ul>';
+            history.forEach(item => {
+                historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
+            });
+            historyHtml += '</ul>';
+            alert(`Histórico Geral:\n${historyHtml}`);
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao carregar histórico geral.');
+        }
+    });
 
     // Inicializar eventos
     saveProductButton.addEventListener('click', saveProduct);

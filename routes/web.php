@@ -22,6 +22,9 @@ Route::get('/produtos', [ProdutoController::class, 'index']);
 Route::post('/produtos', [ProdutoController::class, 'store']);
 Route::put('/produtos/{id}', [ProdutoController::class, 'update']);
 Route::delete('/produtos/{id}', [ProdutoController::class, 'destroy']);
+Route::get('/produtos/{id}/historico', [ProdutoController::class, 'historico']);
+Route::get('/produtos/historico-geral', [ProdutoController::class, 'historicoGeral']);
+
 
 
 // Rotas para o módulo de estoque
