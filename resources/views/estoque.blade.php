@@ -12,20 +12,49 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="d-flex">
+
+  <!-- Barra Superior -->
+  <header class="bg-gray-300 text-black py-3 px-4 d-flex align-items-center justify-content-between fixed-top" style="margin-left: 250px; height: 60px; width: calc(100% - 250px);">
+    <h2 class="text-lg font-semibold">Online</h2>
+    <div class="text-nowrap" style="padding-right: 20px;">
+        Olá, {{ Auth::check() ? Auth::user()->name : 'Visitante' }}!
+    </div>
+</header>
     <!-- Barra de navegação -->
     <nav class="bg text-white d-flex flex-column justify-content-between" style="width: 250px; min-height: 100vh;">
         <div>
             <div class="text-center mb-4 mt-4">
-                <div class="d-flex justify-content-center align-items-center">
+            <a href="{{ route('dashboard') }}"><div class="d-flex justify-content-center align-items-center">
                     <img src="/img/logo-sistema.png" width="80px" alt="Logo">
                 </div>
                 <h2 class="titulo mt-2 text-center">EvolvERP</h2>
-            </div>
+            </div></a>
             <p class="text-uppercase text-secondary text-center">Menu Principal</p>
             <ul class="nav flex-column">
-                <li class="nav-item"><a href="/seguranca" class="nav-link text-white"><i class="bi bi-shield-lock"></i> Segurança</a></li>
-                <li class="nav-item"><a href="/website" class="nav-link text-white"><i class="bi bi-browser-chrome"></i> Website</a></li>
-                <li class="nav-item"><a href="/estoque" class="nav-link text-white active"><i class="bi bi-box"></i> Estoque</a></li>
+            <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-shield-lock"></i> Segurança</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-browser-chrome"></i> Website</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-envelope"></i> Comunicação</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-people"></i> Cadastros Gerais</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-pencil"></i> Assinatura Digital</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-currency-dollar"></i> Módulo Financeiro</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white"><i class="bi bi-star"></i> Outro Módulo</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/estoque" class="nav-link text-white"><i class="bi bi-box"></i> Estoque</a>
+                </li>
             </ul>
         </div>
 
@@ -43,7 +72,7 @@
 
     <!-- Conteúdo principal -->
     <main class="flex-grow bg-gray-100 p-4">
-        <h1 class="text-2xl font-bold">Estoque</h1>
+        <h1 class="text-2xl font-bold mt-5">Estoque</h1>
         <p class="mt-2">Gerencie seus produtos de forma eficiente no módulo de estoque.</p>
 
         <!-- Botão para abrir o formulário -->

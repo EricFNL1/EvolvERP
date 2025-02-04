@@ -18,6 +18,7 @@ class AuthController extends Controller
     public function login(Request $request)
 {
     $credentials = $request->only('email', 'password');
+    $remember = $request->has('remember'); // Captura o checkbox "Lembrar senha"
     $user = User::where('email', $credentials['email'])->first();
 
     if ($user) {

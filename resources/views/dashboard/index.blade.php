@@ -30,11 +30,13 @@
         <div>
             <div class="text-center mb-4 mt-4">
                 <!-- Logo centralizado -->
-                <div class="d-flex justify-content-center align-items-center">
+                <div>
+            <div class="text-center mb-4 mt-4">
+            <a href="{{ route('dashboard') }}"><div class="d-flex justify-content-center align-items-center">
                     <img src="/img/logo-sistema.png" width="80px" alt="Logo">
                 </div>
                 <h2 class="titulo mt-2 text-center">EvolvERP</h2>
-            </div>
+            </div></a>
             <p class="text-uppercase text-secondary text-center">Menu Principal</p>
             <ul class="nav flex-column">
                 <li class="nav-item">
