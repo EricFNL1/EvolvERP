@@ -37,7 +37,7 @@
                 </div>
                 <h2 class="titulo mt-2 text-center">EvolvERP</h2>
             </div></a>
-            <p class="text-uppercase text-secondary text-center">Menu Principal</p>
+            <p class="text-uppercase text-secondary text-center">Menu Sistema</p>
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a href="#" class="nav-link text-white"><i class="bi bi-shield-lock"></i> Segurança</a>
