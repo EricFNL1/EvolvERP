@@ -109,6 +109,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
 document.addEventListener('DOMContentLoaded', () => {
     const productTable = document.getElementById('productTable');
@@ -134,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displayProducts(products);
         } catch (error) {
             console.error(error);
-            alert('Erro ao carregar produtos.');
+            Swal.fire('Erro', 'Erro ao carregar produtos.', 'error');
         }
     };
 
@@ -180,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const unidade = document.getElementById('productUnit').value;
 
         if (!nome || quantidade <= 0 || preco <= 0) {
-            alert('Preencha todos os campos corretamente.');
+            Swal.fire('Atenção', 'Preencha todos os campos corretamente.', 'warning');
             return;
         }
 
@@ -197,34 +198,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) throw new Error('Erro ao salvar produto.');
-            alert(`Produto ${currentProductId ? 'atualizado' : 'adicionado'} com sucesso!`);
+            Swal.fire('Sucesso', `Produto ${currentProductId ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
             productModal.hide();
             fetchProducts();
         } catch (error) {
             console.error(error);
-            alert('Erro ao salvar produto.');
+            Swal.fire('Erro', 'Erro ao salvar produto.', 'error');
         }
     };
 
     // Excluir produto
     window.deleteProduct = async (id) => {
-        if (!confirm('Deseja realmente excluir este produto?')) return;
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você deseja realmente excluir este produto?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Cancelar',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/produtos/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                    });
 
-        try {
-            const response = await fetch(`/produtos/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-            });
-
-            if (!response.ok) throw new Error('Erro ao excluir produto.');
-            alert('Produto excluído com sucesso!');
-            fetchProducts();
-        } catch (error) {
-            console.error(error);
-            alert('Erro ao excluir produto.');
-        }
+                    if (!response.ok) throw new Error('Erro ao excluir produto.');
+                    Swal.fire('Sucesso', 'Produto excluído com sucesso!', 'success');
+                    fetchProducts();
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire('Erro', 'Erro ao excluir produto.', 'error');
+                }
+            }
+        });
     };
 
     // Editar produto
@@ -249,31 +259,63 @@ document.addEventListener('DOMContentLoaded', () => {
                 historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
             });
             historyHtml += '</ul>';
-            alert(`Histórico do Produto:\n${historyHtml}`);
+            Swal.fire({
+                title: 'Histórico do Produto',
+                html: historyHtml,
+                icon: 'info',
+            });
         } catch (error) {
             console.error(error);
-            alert('Erro ao carregar histórico.');
+            Swal.fire('Erro', 'Erro ao carregar histórico.', 'error');
         }
     };
 
-    // Ver histórico geral
-    viewGeneralHistoryButton.addEventListener('click', async () => {
-        try {
-            const response = await fetch('/produtos/historico-geral');
-            if (!response.ok) throw new Error('Erro ao carregar histórico geral.');
-
-            const history = await response.json();
-            let historyHtml = '<ul>';
-            history.forEach(item => {
-                historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
-            });
-            historyHtml += '</ul>';
-            alert(`Histórico Geral:\n${historyHtml}`);
-        } catch (error) {
-            console.error(error);
-            alert('Erro ao carregar histórico geral.');
+   // Ver histórico geral com filtro de datas
+viewGeneralHistoryButton.addEventListener('click', async () => {
+    const { value: formValues } = await Swal.fire({
+        title: 'Filtrar Histórico Geral',
+        html:
+            '<label for="startDate">Data Inicial:</label>' +
+            '<input type="date" id="startDate" class="swal2-input">' +
+            '<label for="endDate">Data Final:</label>' +
+            '<input type="date" id="endDate" class="swal2-input">',
+        focusConfirm: false,
+        preConfirm: () => {
+            return {
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+            };
         }
     });
+
+    if (!formValues) return;
+
+    try {
+        const query = new URLSearchParams({
+            start_date: formValues.startDate,
+            end_date: formValues.endDate,
+        });
+
+        const response = await fetch(`/produtos/historico-geral?${query}`);
+        if (!response.ok) throw new Error('Erro ao carregar histórico geral.');
+
+        const history = await response.json();
+        let historyHtml = '<ul>';
+        history.forEach(item => {
+            historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
+        });
+        historyHtml += '</ul>';
+        Swal.fire({
+            title: 'Histórico Geral',
+            html: historyHtml,
+            icon: 'info',
+        });
+    } catch (error) {
+        console.error(error);
+        Swal.fire('Erro', 'Erro ao carregar histórico geral.', 'error');
+    }
+});
+
 
     // Inicializar eventos
     saveProductButton.addEventListener('click', saveProduct);
@@ -286,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carregar produtos ao iniciar
     fetchProducts();
 });
+
 
     </script>
 </body>

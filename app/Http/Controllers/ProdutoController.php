@@ -82,18 +82,33 @@ class ProdutoController extends Controller {
     }
     
 
-    public function historicoGeral()
-    {
-        try {
-            $historicoGeral = HistoricoMovimentacao::with('usuario', 'produto')
-                ->orderBy('created_at', 'desc')
-                ->get();
+    public function historicoGeral(Request $request) {
+        // Validação opcional de datas
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+        ]);
     
-            return response()->json($historicoGeral, 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Erro ao carregar histórico geral.', 'error' => $e->getMessage()], 500);
+        // Obter os filtros de data
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+    
+        // Query para buscar o histórico, filtrando por datas, se fornecidas
+        $query = HistoricoMovimentacao::with('usuario');
+    
+        if ($startDate) {
+            $query->where('created_at', '>=', $startDate);
         }
+    
+        if ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+    
+        $historico = $query->get();
+    
+        return response()->json($historico);
     }
+    
     
     
 }
