@@ -13,59 +13,30 @@
 </head>
 <body class="d-flex">
 
-  <!-- Barra Superior -->
-  <header class="bg-gray-300 text-black py-3 px-4 d-flex align-items-center justify-content-between fixed-top" style="margin-left: 250px; height: 60px; width: calc(100% - 250px);">
-    <h2 class="text-lg font-semibold">Online</h2>
-    <div class="text-nowrap" style="padding-right: 20px;">
-        Olá, {{ Auth::check() ? Auth::user()->name : 'Visitante' }}!
-    </div>
-</header>
+    <!-- Barra Superior -->
+    <header class="bg-gray-300 text-black py-3 px-4 d-flex align-items-center justify-content-between fixed-top" style="margin-left: 250px; height: 60px; width: calc(100% - 250px);">
+        <h2 class="text-lg font-semibold">Online</h2>
+        <div class="text-nowrap" style="padding-right: 20px;">
+            Olá, {{ Auth::check() ? Auth::user()->name : 'Visitante' }}!
+        </div>
+    </header>
+
     <!-- Barra de navegação -->
     <nav class="bg text-white d-flex flex-column justify-content-between" style="width: 250px; min-height: 100vh;">
         <div>
             <div class="text-center mb-4 mt-4">
-            <a href="{{ route('dashboard') }}"><div class="d-flex justify-content-center align-items-center">
-                    <img src="/img/logo-sistema.png" width="80px" alt="Logo">
-                </div>
-                <h2 class="titulo mt-2 text-center">EvolvERP</h2>
-            </div></a>
+                <a href="{{ route('dashboard') }}">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img src="/img/logo-sistema.png" width="80px" alt="Logo">
+                    </div>
+                    <h2 class="titulo mt-2 text-center">EvolvERP</h2>
+                </a>
+            </div>
             <p class="text-uppercase text-secondary text-center">Menu Sistema</p>
             <ul class="nav flex-column">
-            <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-shield-lock"></i> Segurança</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-browser-chrome"></i> Website</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-envelope"></i> Comunicação</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-people"></i> Cadastros Gerais</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-pencil"></i> Assinatura Digital</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-currency-dollar"></i> Módulo Financeiro</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-star"></i> Outro Módulo</a>
-                </li>
                 <li class="nav-item"><a href="/estoque" class="nav-link text-white active"><i class="bi bi-box"></i> Estoque</a></li>
             </ul>
         </div>
-
-         <!-- Guia inferior -->
-    <div class="fixed-bottom d-flex justify-content-around align-items-center py-3" 
-    style="border-top: 1px solid rgba(255, 255, 255, 0.2); background-color: #2B3E50; width: 250px;">
-        <a href="{{ route('dashboard') }}" class="text-white"><i class="bi bi-house-door-fill"></i></a>
-        <a href="#" class="text-white"><i class="bi bi-arrows-fullscreen"></i></a>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="bg-red-500 text-white py-1 px-2 rounded"><a href="#" class="text-white"><i class="bi bi-power"></i></a></button>
-        </form>
-    </div>
     </nav>
 
     <!-- Conteúdo principal -->
@@ -73,8 +44,14 @@
         <h1 class="text-2xl font-bold mt-5">Estoque</h1>
         <p class="mt-2">Gerencie seus produtos de forma eficiente no módulo de estoque.</p>
 
-        <!-- Botão para abrir o formulário -->
+        <!-- Botões principais -->
         <button id="addProductButton" class="btn btn-primary mb-3"><i class="bi bi-plus-circle"></i> Adicionar Produto</button>
+        <button id="movementButton" class="btn btn-secondary mb-3"><i class="bi bi-arrow-right"></i> Registrar Movimentação</button>
+        <!-- Botão para abrir o formulário de cadastro de cliente -->
+        <button id="addClientButton" class="btn btn-success mb-3"><i class="bi bi-person-plus"></i> Adicionar Cliente</button>
+
+
+
         <!-- Campo de pesquisa -->
         <input type="text" id="searchInput" class="form-control mb-3" placeholder="Pesquisar produto...">
 
@@ -110,17 +87,16 @@
                             <input type="text" id="productName" class="form-control" required>
                         </div>
                         <div class="mb-3">
-    <label for="productQuantity" class="form-label">Quantidade</label>
-    <input type="number" id="productQuantity" class="form-control" required>
-</div>
-<div class="mb-3">
-    <label for="productUnit" class="form-label">Unidade de Medida</label>
-    <select id="productUnit" class="form-control" required>
-        <option value="KG">KG</option>
-        <option value="Sacos">Sacos</option>
-    </select>
-</div>
-
+                            <label for="productQuantity" class="form-label">Quantidade</label>
+                            <input type="number" id="productQuantity" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productUnit" class="form-label">Unidade de Medida</label>
+                            <select id="productUnit" class="form-control" required>
+                                <option value="KG">KG</option>
+                                <option value="Sacos">Sacos</option>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="productPrice" class="form-label">Preço</label>
                             <input type="number" step="0.01" id="productPrice" class="form-control" required>
@@ -135,6 +111,104 @@
         </div>
     </div>
 
+    <!-- Modal para registrar movimentação -->
+    <div id="movementModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Movimentação</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="movementForm">
+                        <div class="mb-3">
+                            <label for="movementProduct" class="form-label">Produto</label>
+                            <select id="movementProduct" class="form-control" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="movementQuantity" class="form-label">Quantidade</label>
+                            <input type="number" id="movementQuantity" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="movementClient" class="form-label">Cliente</label>
+                            <input type="text" id="movementClient" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="saveMovementButton" class="btn btn-primary">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="clientModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm">
+                    <div class="mb-3">
+                        <label for="clientName" class="form-label">Nome</label>
+                        <input type="text" id="clientName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientEmail" class="form-label">Email</label>
+                        <input type="email" id="clientEmail" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientPhone" class="form-label">Telefone</label>
+                        <input type="text" id="clientPhone" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="saveClientButton" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para adicionar cliente -->
+<div id="clientModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="clientForm">
+                    <div class="mb-3">
+                        <label for="clientName" class="form-label">Nome</label>
+                        <input type="text" id="clientName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientEmail" class="form-label">Email</label>
+                        <input type="email" id="clientEmail" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientPhone" class="form-label">Telefone</label>
+                        <input type="text" id="clientPhone" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="saveClientButton" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -144,6 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const productModal = new bootstrap.Modal(document.getElementById('productModal'));
     const saveProductButton = document.getElementById('saveProductButton');
     const viewGeneralHistoryButton = document.createElement('button'); // Botão para histórico geral
+    const clientModal = new bootstrap.Modal(document.getElementById('clientModal'));
+    const saveClientButton = document.getElementById('saveClientButton');
     let currentProductId = null;
     let products = [];
 
@@ -185,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="btn btn-warning btn-sm" onclick="editProduct(${product.id}, '${product.nome}', ${product.quantidade}, '${product.unidade}', ${product.preco})"><i class="bi bi-pencil"></i> Editar</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id})"><i class="bi bi-trash"></i> Excluir</button>
                         <button class="btn btn-info btn-sm" onclick="viewHistory(${product.id})"><i class="bi bi-clock-history"></i> Histórico</button>
+                        <button class="btn btn-primary btn-sm" onclick="openMovementModal(${product.id}, '${product.nome}')"><i class="bi bi-arrow-right"></i> Movimentar</button>
                     </td>
                 </tr>
             `;
@@ -297,51 +374,117 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-   // Ver histórico geral com filtro de datas
-viewGeneralHistoryButton.addEventListener('click', async () => {
-    const { value: formValues } = await Swal.fire({
-        title: 'Filtrar Histórico Geral',
-        html:
-            '<label for="startDate">Data Inicial:</label>' +
-            '<input type="date" id="startDate" class="swal2-input">' +
-            '<label for="endDate">Data Final:</label>' +
-            '<input type="date" id="endDate" class="swal2-input">',
-        focusConfirm: false,
-        preConfirm: () => {
-            return {
-                startDate: document.getElementById('startDate').value,
-                endDate: document.getElementById('endDate').value,
-            };
+    // Ver histórico geral com filtro de datas
+    viewGeneralHistoryButton.addEventListener('click', async () => {
+        const { value: formValues } = await Swal.fire({
+            title: 'Filtrar Histórico Geral',
+            html:
+                '<label for="startDate">Data Inicial:</label>' +
+                '<input type="date" id="startDate" class="swal2-input">' +
+                '<label for="endDate">Data Final:</label>' +
+                '<input type="date" id="endDate" class="swal2-input">',
+            focusConfirm: false,
+            preConfirm: () => {
+                return {
+                    startDate: document.getElementById('startDate').value,
+                    endDate: document.getElementById('endDate').value,
+                };
+            }
+        });
+
+        if (!formValues) return;
+
+        try {
+            const query = new URLSearchParams({
+                start_date: formValues.startDate,
+                end_date: formValues.endDate,
+            });
+
+            const response = await fetch(`/produtos/historico-geral?${query}`);
+            if (!response.ok) throw new Error('Erro ao carregar histórico geral.');
+
+            const history = await response.json();
+            let historyHtml = '<ul>';
+            history.forEach(item => {
+                historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
+            });
+            historyHtml += '</ul>';
+            Swal.fire({
+                title: 'Histórico Geral',
+                html: historyHtml,
+                icon: 'info',
+            });
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Erro', 'Erro ao carregar histórico geral.', 'error');
         }
     });
 
-    if (!formValues) return;
+    
 
-    try {
-        const query = new URLSearchParams({
-            start_date: formValues.startDate,
-            end_date: formValues.endDate,
+    // Função para registrar movimentação
+    const fetchClients = async () => {
+        try {
+            const response = await fetch('/clientes');
+            if (!response.ok) throw new Error('Erro ao carregar clientes.');
+            return await response.json();
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Erro', 'Erro ao carregar clientes.', 'error');
+        }
+    };
+
+    window.openMovementModal = async (productId, productName) => {
+        const clients = await fetchClients();
+        if (!clients || clients.length === 0) {
+            Swal.fire('Atenção', 'Nenhum cliente cadastrado.', 'warning');
+            return;
+        }
+
+        let clientOptions = '';
+        clients.forEach(client => {
+            clientOptions += `<option value="${client.id}">${client.nome}</option>`;
         });
 
-        const response = await fetch(`/produtos/historico-geral?${query}`);
-        if (!response.ok) throw new Error('Erro ao carregar histórico geral.');
-
-        const history = await response.json();
-        let historyHtml = '<ul>';
-        history.forEach(item => {
-            historyHtml += `<li><strong>${item.acao}</strong>: ${item.quantidade} ${item.unidade} - <em>${item.usuario?.name || 'Usuário desconhecido'}</em> (${new Date(item.created_at).toLocaleString()})</li>`;
-        });
-        historyHtml += '</ul>';
         Swal.fire({
-            title: 'Histórico Geral',
-            html: historyHtml,
-            icon: 'info',
+            title: `Registrar Movimentação para ${productName}`,
+            html: `
+                <label for="movementQuantity">Quantidade:</label>
+                <input type="number" id="movementQuantity" class="swal2-input">
+                <label for="movementClient">Cliente:</label>
+                <select id="movementClient" class="swal2-input">${clientOptions}</select>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Registrar',
+            preConfirm: () => {
+                return {
+                    quantity: document.getElementById('movementQuantity').value,
+                    clientId: document.getElementById('movementClient').value,
+                };
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const { quantity, clientId } = result.value;
+                    const response = await fetch(`/produtos/movimentar`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: JSON.stringify({ productId, quantity, client: clientId }),
+                    });
+
+                    if (!response.ok) throw new Error('Erro ao registrar movimentação.');
+                    Swal.fire('Sucesso', 'Movimentação registrada com sucesso!', 'success');
+                    fetchProducts();
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire('Erro', 'Erro ao registrar movimentação.', 'error');
+                }
+            }
         });
-    } catch (error) {
-        console.error(error);
-        Swal.fire('Erro', 'Erro ao carregar histórico geral.', 'error');
-    }
-});
+    };
 
 
     // Inicializar eventos
@@ -355,7 +498,6 @@ viewGeneralHistoryButton.addEventListener('click', async () => {
     // Carregar produtos ao iniciar
     fetchProducts();
 });
-
 
     </script>
 </body>

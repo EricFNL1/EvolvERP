@@ -7,6 +7,20 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\MovimentacaoController;
+use App\Http\Controllers\ClienteController;
+
+Route::get('/clientes', [ClienteController::class, 'index']);
+Route::post('/clientes', [ClienteController::class, 'store']);
+Route::put('/clientes/{id}', [ClienteController::class, 'update']);
+Route::delete('/clientes/{id}', [ClienteController::class, 'destroy']);
+
+
+Route::get('/movimentacoes', [MovimentacaoController::class, 'index']);
+Route::post('/movimentacoes', [MovimentacaoController::class, 'store']);
+Route::get('/movimentacoes/relatorio', [MovimentacaoController::class, 'relatorio']);
+Route::post('/produtos/movimentar', [MovimentacaoController::class, 'store']);
+
 
 // Rota principal redirecionando para o login
 Route::get('/', function () {
