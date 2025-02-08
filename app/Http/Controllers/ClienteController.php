@@ -14,17 +14,22 @@ class ClienteController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:clientes,email',
-            'telefone' => 'required|string|max:20',
-        ]);
-
-        $cliente = Cliente::create($validated);
-
-        return response()->json($cliente, 201);
+        try {
+            $validated = $request->validate([
+                'nome' => 'required|string|max:255',
+                'email' => 'required|email|unique:clientes,email',
+                'telefone' => 'required|string|max:20',
+            ]);
+    
+            $cliente = Cliente::create($validated);
+            return response()->json($cliente, 201);
+    
+        } catch (\Throwable $e) {
+            \Log::error($e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
-
+    
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
